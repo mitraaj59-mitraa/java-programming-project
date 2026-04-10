@@ -1,0 +1,117 @@
+import java.util.ArrayList;
+import java.util.Scanner;
+
+// Product Class
+class Product {
+    int id;
+    String name;
+    double price;
+
+    Product(int id, String name, double price) {
+        this.id = id;
+        this.name = name;
+        this.price = price;
+    }
+}
+
+// Order Item Class
+class OrderItem {
+    Product product;
+    int quantity;
+
+    OrderItem(Product product, int quantity) {
+        this.product = product;
+        this.quantity = quantity;
+    }
+
+    double getTotal() {
+        return product.price * quantity;
+    }
+}
+
+// Invoice Class
+class Invoice {
+    static int invoiceCounter = 1;
+
+    static void generateInvoice(ArrayList<OrderItem> items) {
+        double grandTotal = 0;
+
+        System.out.println("\n========== INVOICE ==========");
+        System.out.println("Invoice No: " + invoiceCounter++);
+        System.out.println("------------------------------");
+        System.out.printf("%-10s %-10s %-10s %-10s\n", "Product", "Price", "Qty", "Total");
+
+        for (OrderItem item : items) {
+            double total = item.getTotal();
+            grandTotal += total;
+
+            System.out.printf("%-10s %-10.2f %-10d %-10.2f\n",
+                    item.product.name,
+                    item.product.price,
+                    item.quantity,
+                    total);
+        }
+
+        System.out.println("------------------------------");
+        System.out.println("Grand Total: " + grandTotal);
+        System.out.println("==============================");
+    }
+}
+
+// Main Class
+public class OnlineOrderSystem {
+    public static void main(String[] args) {
+
+        Scanner sc = new Scanner(System.in);
+
+        // Product List
+        ArrayList<Product> products = new ArrayList<>();
+        products.add(new Product(1, "Laptop", 50000));
+        products.add(new Product(2, "Phone", 20000));
+        products.add(new Product(3, "Headset", 2000));
+
+        ArrayList<OrderItem> cart = new ArrayList<>();
+
+        System.out.println("=== Online Order System ===");
+
+        while (true) {
+            System.out.println("\nAvailable Products:");
+            for (Product p : products) {
+                System.out.println(p.id + ". " + p.name + " - " + p.price);
+            }
+
+            System.out.print("Enter product ID (0 to checkout): ");
+            int choice = sc.nextInt();
+
+            if (choice == 0) break;
+
+            Product selected = null;
+            for (Product p : products) {
+                if (p.id == choice) {
+                    selected = p;
+                    break;
+                }
+            }
+
+            if (selected == null) {
+                System.out.println("Invalid Product!");
+                continue;
+            }
+
+            System.out.print("Enter quantity: ");
+            int qty = sc.nextInt();
+
+            cart.add(new OrderItem(selected, qty));
+            System.out.println("Added to cart!");
+        }
+
+        // Generate Invoice
+        if (cart.size() > 0) {
+            Invoice.generateInvoice(cart);
+        } else {
+            System.out.println("No items purchased.");
+        }
+
+        sc.close();
+    }
+}
